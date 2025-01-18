@@ -1,5 +1,5 @@
 import streamlit as st
-import pages.N_body as n_body
+import pages.N_body as nBody
 
 st.set_page_config(
     layout='wide',
@@ -49,7 +49,7 @@ def main():
         home_page()
     elif selected_page == pages_name[1]:
         title_text.title("Задача N тел")
-        n_body.run_n_body()
+        nBody.run_n_body()
     elif selected_page == "Страница 2":
         page_two()
 
