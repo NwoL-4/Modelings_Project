@@ -43,7 +43,7 @@ def collision_check(num_body, body_radius, coordinate):
     return collision
 
 
-def plot_scatter(coordinate, radius, colors, progress_bar):
+def plot_n_body(coordinate, radius, colors, progress_bar):
     theme = st_theme()
 
     fig = go.Figure()
@@ -195,7 +195,7 @@ def run_n_body():
                                             min_value=1, max_value=int(1e10), value=1000)
             submit_button_sim = st.form_submit_button('Отправить ' + text_sim,
                                                       use_container_width=True)
-            if n and submit_button_sim and time_step and num_iteration:
+            if n and time_step and num_iteration and submit_button_sim:
                 st.success('Выбраны ' + text_sim)
                 st.session_state.num_body = convert_type(n, int)
                 st.session_state.time_step = convert_type(time_step, float)
@@ -272,18 +272,19 @@ def run_n_body():
 
         ct = 0
 
-        progress_bar = st.progress(0, text='Моделирование...')
-        for i in range(1, st.session_state.num_iteration + 1):
-            collisions = collision_check(st.session_state.num_body, radius_body, data[i - 1, 0, :, :])
-            if collisions:
-                st.write(f'Моделирование завершено досрочно.')
-                for collision in collisions:
-                    st.write(f'Столкнулись {collision[0]} и {collisions[1]} тела')
-                break
-            ct += st.session_state.time_step
-            data[i] = pages.utils.rk4(ct, st.session_state.time_step, data[i - 1], solve=n_body_solve, func=mass_body)
+        button_run = st.toggle('Запуск')
+        if button_run:
+            progress_bar = st.progress(0, text='Моделирование...')
+            for i in range(1, st.session_state.num_iteration + 1):
+                collisions = collision_check(st.session_state.num_body, radius_body, data[i - 1, 0, :, :])
+                if collisions:
+                    st.write(f'Моделирование завершено досрочно.')
+                    for collision in collisions:
+                        st.write(f'Столкнулись {collision[0]} и {collision[1]} тела')
+                    break
+                ct += st.session_state.time_step
+                data[i] = pages.utils.rk4(ct, st.session_state.time_step, data[i - 1], solve=n_body_solve, func=mass_body)
 
-            progress_bar.progress(i / st.session_state.num_iteration, text='Моделирование...')
-
-        plot_scatter(data[:, 0, :, :], radius_body, st.session_state.old_dF['Цвет тела'].to_numpy(), progress_bar)
-        progress_bar.success('Готово')
+                progress_bar.progress(i / st.session_state.num_iteration, text='Моделирование...')
+            plot_n_body(data[:, 0, :, :], radius_body, st.session_state.old_dF['Цвет тела'].to_numpy(), progress_bar)
+            progress_bar.success('Готово')
