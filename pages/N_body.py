@@ -1,15 +1,14 @@
-import os.path
-
+import numpy as np
 import pandas as pd
 import scipy.constants as const
-import numpy as np
+
 from numba import njit, prange
 
-import streamlit as st
-from streamlit_theme import st_theme
-from streamlit_plotly_events import plotly_events
-
 import plotly.graph_objects as go
+
+import streamlit as st
+from streamlit_plotly_events import plotly_events
+from streamlit_theme import st_theme
 
 import pages.utils
 from pages.error_handler import convert_type
