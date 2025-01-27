@@ -1,5 +1,6 @@
 import streamlit as st
 import pages.N_body as nBody
+import pages.heat_equation as heatEq
 
 st.set_page_config(
     layout='wide',
@@ -33,7 +34,8 @@ def main():
 
     pages_name = [
         'Главная',
-        'Задача N тел'
+        'Задача N тел',
+        'Уравнение теплопроводности'
     ]
 
     # Радиокнопки для выбора страницы
@@ -44,14 +46,16 @@ def main():
     )
 
     # Отображение нужной страницы
-    if selected_page == pages_name[0]:
-        title_text.title("Добро пожаловать!")
-        home_page()
-    elif selected_page == pages_name[1]:
-        title_text.title("Задача N тел")
-        nBody.run_n_body()
-    elif selected_page == "Страница 2":
-        page_two()
+    match selected_page:
+        case 'Главная':
+            title_text.title('Добро пожаловать')
+        case 'Задача N тел':
+            title_text.title(selected_page)
+            nBody.run_n_body()
+        case 'Уравнение теплопроводности':
+            title_text.title(selected_page)
+            heatEq.run_heat_equation()
+
 
 # Запуск приложения
 if __name__ == "__main__":
