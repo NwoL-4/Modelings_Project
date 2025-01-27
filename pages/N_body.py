@@ -1,3 +1,7 @@
+import os.path
+import time
+
+import imageio
 import numpy as np
 import pandas as pd
 import scipy.constants as const
@@ -7,6 +11,7 @@ from numba import njit, prange
 import plotly.graph_objects as go
 
 import streamlit as st
+from pyarrow import duration
 from streamlit_plotly_events import plotly_events
 from streamlit_theme import st_theme
 
@@ -43,9 +48,88 @@ def collision_check(num_body, body_radius, coordinate):
     return collision
 
 
-def plot_n_body(coordinate, radius, colors, progress_bar):
-    theme = st_theme()
+def gif_n_body(coordinate, radiuse, colors, theme, progress_bar, num_view):
+    size = 20
+    width = 5
 
+    img_folder = 'images'
+    if not os.path.exists(img_folder):
+        os.makedirs(img_folder, exist_ok=True)
+
+    step = coordinate.shape[0] // num_view
+    indexes_range = range(0, coordinate.shape[0], step)
+    body_range = range(coordinate.shape[2])
+
+    progress_bar.progress(0 / coordinate.shape[0], text='Загрузка фреймов ...')
+    filenames = []
+    for index in indexes_range:
+        data = []
+        for body in body_range:
+            data.append(
+                go.Scatter3d(
+                    x=[coordinate[index, 0, body]],
+                    y=[coordinate[index, 1, body]],
+                    z=[coordinate[index, 2, body]],
+                    mode='markers',
+                    marker=dict(
+                        color=colors[body],
+                        size=size
+                    ),
+                    name=f'{body + 1} тело'))
+            data.append(
+                go.Scatter3d(
+                    x=coordinate[:index + 1, 0, body],
+                    y=coordinate[:index + 1, 1, body],
+                    z=coordinate[:index + 1, 2, body],
+                    mode='lines',
+                    line=dict(
+                        color=colors[body],
+                        width=width
+                    ),
+                    name=f'Траектория {body + 1} тела'))
+
+        fig = go.Figure(data=data)
+        fig.update_layout(
+            plot_bgcolor=theme['backgroundColor'],
+            paper_bgcolor=theme['backgroundColor'],
+            font=dict(
+                family=theme['font'],
+                color=theme['textColor'],
+            ),
+            scene=dict(
+                xaxis=dict(
+                    title=dict(
+                        text='X, м'
+                    )
+                ),
+                yaxis=dict(
+                    title=dict(
+                        text='Y, м'
+                    )
+                ),
+                zaxis=dict(
+                    title=dict(
+                        text='Z, м'
+                    )
+                ),
+            )
+        )
+
+        img_file = os.path.join(img_folder, f'plot_{index}.png')
+        fig.write_image(img_file)
+        progress_bar.progress((index + 1) / coordinate.shape[0], text='Фрейм сохранен ...')
+        filenames.append(img_file)
+
+        progress_bar.progress((index + 1) / coordinate.shape[0], text='Загрузка фреймов ...')
+
+    gif_filename = 'animation.gif'
+    with imageio.get_writer(gif_filename, mode='I', duration=0.1) as writer:
+        for filename in filenames:
+            image = imageio.imread(filename)
+            writer.append_data(image)
+    st.image(gif_filename)
+
+def plot_n_body(coordinate, radius, colors, theme, progress_bar, num_view):
     fig = go.Figure()
 
     # size = radius / radius.max() * 20
@@ -53,9 +137,13 @@ def plot_n_body(coordinate, radius, colors, progress_bar):
     # width = size[body] / 10
     width = 5
 
-    progress_bar.progress(0, text='Визуализирование ...')
+    progress_bar.progress(0, text='Стартовый график загружается ...')
 
-    for body in range(coordinate.shape[2]):
+    step = coordinate.shape[0] // num_view
+    indexes_range = range(0, coordinate.shape[0], step)
+    body_range = range(coordinate.shape[2])
+
+    for body in body_range:
         fig.add_trace(go.Scatter3d(
             x=[coordinate[0, 0, body]],
             y=[coordinate[0, 1, body]],
@@ -80,17 +168,17 @@ def plot_n_body(coordinate, radius, colors, progress_bar):
             name=f'Траектория {body + 1} тела'
         ))
 
-        progress_bar.progress(body / coordinate.shape[2], text='Визуализирование ...')
+        progress_bar.progress(body / coordinate.shape[2], text='Стартовый график загружается ...')
 
     frames = []
 
-    progress_bar.progress(0, text='Визуализирование ...')
+    progress_bar.progress(0, text='Загрузка фреймов ...')
 
-    for index in range(coordinate.shape[0]):
+    for index in indexes_range:
 
         data = []
 
-        for body in range(coordinate.shape[2]):
+        for body in body_range:
             data.append(go.Scatter3d(
                 x=[coordinate[index, 0, body]],
                 y=[coordinate[index, 1, body]],
@@ -119,10 +207,11 @@ def plot_n_body(coordinate, radius, colors, progress_bar):
                                )
                       )
 
-        progress_bar.progress(index / coordinate.shape[0], text='Визуализирование ...')
+        progress_bar.progress((index + 1) / coordinate.shape[0], text='Загрузка фреймов ...')
 
+    progress_bar.success('Фреймы загружены')
     steps = []
-    for index in range(coordinate.shape[0]):
+    for index in indexes_range:
         step = dict(
             label=str(index),
             method='animate',
@@ -171,10 +260,10 @@ def plot_n_body(coordinate, radius, colors, progress_bar):
                                                   "mode": "immediate",
                                                   "transition": {"duration": 15}}])])],
     )
-
+    progress_bar.success('Обновлен layout')
     fig.layout.sliders = sliders
     fig.frames = frames
-
+    progress_bar.success('Добавлены слайдеры и фреймы')
     plotly_events(fig, click_event=False, override_height=1000, override_width='100%')
 
 
@@ -183,6 +272,7 @@ def color_body(s):
 
 
 def run_n_body():
+    theme = st_theme()
     col1, col2 = st.columns(2)
     with col1:
         text_sim = 'Параметры симуляции'
@@ -193,14 +283,19 @@ def run_n_body():
             time_step = st.text_input('Временной шаг', value="10")
             num_iteration = st.number_input('Число итераций', help='Выберите целое число от 1 до 1ed10',
                                             min_value=1, max_value=int(1e10), value=1000)
+            num_view = st.number_input('Число кадров для вывода', help=f'Выберите число от 2 до {num_iteration}',
+                                       max_value=num_iteration, min_value=2,
+                                       value=num_iteration if 'num_view' not in st.session_state else st.session_state.num_view)
             submit_button_sim = st.form_submit_button('Отправить ' + text_sim,
                                                       use_container_width=True)
-            if n and time_step and num_iteration and submit_button_sim:
+            if n and time_step and num_iteration and num_view and submit_button_sim:
                 st.success('Выбраны ' + text_sim)
                 st.session_state.num_body = convert_type(n, int)
                 st.session_state.time_step = convert_type(time_step, float)
                 st.session_state.num_iteration = convert_type(num_iteration, int)
-                st.session_state.colors_body = ['#%06X' % np.random.randint(0, 0xFFFFFF) for _ in range(st.session_state.num_body)]
+                st.session_state.num_view = convert_type(num_view, int)
+                st.session_state.colors_body = ['#%06X' % np.random.randint(0, 0xFFFFFF) for _ in
+                                                range(st.session_state.num_body)]
 
     with col2:
         if 'num_body' in st.session_state:
@@ -226,7 +321,7 @@ def run_n_body():
                     new_dF = st.data_editor(new_dF, hide_index=True, disabled=('Номер тела', 'Цвет тела'))
                 else:
                     if new_dF.shape == st.session_state.old_dF.shape:
-                        new_dF = st.data_editor(st.session_state.old_dF, hide_index=True, disabled=('Номер тела',))
+                        new_dF = st.data_editor(st.session_state.old_dF, hide_index=True, disabled=('Номер тела', 'Цвет тела'))
 
                     else:
                         row = min(new_dF.shape[0], st.session_state.old_dF.shape[0])
@@ -240,13 +335,13 @@ def run_n_body():
                     st.session_state.old_dF.style.apply(color_body, axis=1)
                     st.success('Выбраны ' + text_sim)
 
-
     if ('num_body' in st.session_state) and ('old_dF' in st.session_state):
         st.write(f'Выбрано {st.session_state.num_body} тела')
         st.write(f'Начальные параметры')
-        st.dataframe(st.session_state.old_dF.style.apply(lambda x: color_body(x) if x.name == 'Цвет тела' else [''] * len(x),
-                                                         axis=0),
-                     hide_index=True)
+        st.dataframe(
+            st.session_state.old_dF.style.apply(lambda x: color_body(x) if x.name == 'Цвет тела' else [''] * len(x),
+                                                axis=0),
+            hide_index=True)
         try:
             coord_x = np.array(st.session_state.old_dF['Координата x, м'].to_numpy(), dtype=float)
             coord_y = np.array(st.session_state.old_dF['Координата y, м'].to_numpy(), dtype=float)
@@ -274,7 +369,9 @@ def run_n_body():
 
         button_run = st.toggle('Запуск')
         if button_run:
-            progress_bar = st.progress(0, text='Моделирование...')
+            writer = st.empty()
+            writer.progress(0, text='Моделирование...')
+
             for i in range(1, st.session_state.num_iteration + 1):
                 collisions = collision_check(st.session_state.num_body, radius_body, data[i - 1, 0, :, :])
                 if collisions:
@@ -283,8 +380,14 @@ def run_n_body():
                         st.write(f'Столкнулись {collision[0]} и {collision[1]} тела')
                     break
                 ct += st.session_state.time_step
-                data[i] = pages.utils.rk4(ct, st.session_state.time_step, data[i - 1], solve=n_body_solve, func=mass_body)
+                data[i] = pages.utils.rk4(ct, st.session_state.time_step, data[i - 1], solve=n_body_solve,
+                                          func=mass_body)
 
-                progress_bar.progress(i / st.session_state.num_iteration, text='Моделирование...')
-            plot_n_body(data[:, 0, :, :], radius_body, st.session_state.old_dF['Цвет тела'].to_numpy(), progress_bar)
-            progress_bar.success('Готово')
+                writer.progress(i / st.session_state.num_iteration, text='Моделирование...')
+            plot_n_body(data[:, 0, :, :], radius_body,
+                        st.session_state.old_dF['Цвет тела'].to_numpy(), theme, writer, st.session_state.num_view)
+            gif_n_body(data[:, 0, :, :], radius_body,
+                       st.session_state.old_dF['Цвет тела'].to_numpy(), theme, writer, st.session_state.num_view)
+            writer.success('Готово')
+            time.sleep(2)
+            writer.empty()
