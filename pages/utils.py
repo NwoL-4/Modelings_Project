@@ -1,8 +1,7 @@
 from typing import Callable
 
 import numpy as np
-import streamlit
-from numba import njit
+from numba import njit, prange
 
 
 @njit(parallel=True, cache=True)
@@ -28,3 +27,18 @@ def rk4(ct: float,
     data[1] = speed + (l1 + 2 * l2 + 2 * l3 + l4) / 6
 
     return data
+
+
+@njit(cache=True, parallel=True)
+def euler_Method(temperature, time_step, alpha, hx, hy):
+    new_data = temperature.copy()
+
+    for index_x in prange(1, temperature.shape[0] - 1):
+        for index_y in prange(1, temperature.shape[1] - 1):
+            new_data[index_x, index_y] = (temperature[index_x, index_y] +
+                                          alpha ** 2 * time_step * (
+                    (temperature[index_x - 1, index_y] - 2 * temperature[index_x, index_y] + temperature[index_x + 1, index_y]) / (hx ** 2) +
+                    (temperature[index_x, index_y - 1] - 2 * temperature[index_x, index_y] + temperature[index_x, index_y + 1]) / (hy ** 2)
+            )
+            )
+    return new_data
