@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
 )
 
 import plotly.graph_objects as go
+from pyarrow import duration
 
 import utils
 
@@ -248,6 +249,8 @@ class Nbody(QWidget):
         self.progress_bar.setMaximum(100)
         self.progress_bar.setValue(0)
 
+        self.collision.hide()
+
         for i in range(1, self.num_iter + 1):
             collisions = utils.collision_check(num_body=self.num_body,
                                                body_radius=self.radius_body,
@@ -274,6 +277,8 @@ class Nbody(QWidget):
 
         size = 20
         width = 5
+
+        duration = 15
 
         self.progress_bar.setValue(0)
 
@@ -351,7 +356,7 @@ class Nbody(QWidget):
             step = dict(
                 label=str(index),
                 method='animate',
-                args=[[str(index)]]
+                args=[[str(index)], dict(frame={"duration": duration, "redraw": True}, mode="immediate")]
             )
             steps.append(step)
 
@@ -393,9 +398,14 @@ class Nbody(QWidget):
                 showactive=False,
                 type="buttons",
                 buttons=[
-                    dict(label="►", method="animate", args=[None, {"fromcurrent": True}]),
+                    dict(label="►", method="animate", args=[None,
+                                                            {"frame": {"duration": duration, "redraw": False},
+                                                             "mode": "immediate",
+                                                             "transition": {"duration": 0}},
+                                                            {"fromcurrent": True}
+                                                            ]),
                     dict(label="❚❚", method="animate",
-                         args=[[None], {"frame": {"duration": 50, "redraw": False},
+                         args=[[None], {"frame": {"duration": duration, "redraw": True},
                                         "mode": "immediate",
                                         "transition": {"duration": 0}}])])],
         )
