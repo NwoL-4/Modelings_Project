@@ -399,10 +399,10 @@ class Nbody(QWidget):
                 type="buttons",
                 buttons=[
                     dict(label="►", method="animate", args=[None,
-                                                            {"frame": {"duration": duration, "redraw": False},
+                                                            {"frame": {"duration": duration, "redraw": True},
                                                              "mode": "immediate",
                                                              "transition": {"duration": 0}},
-                                                            {"fromcurrent": True}
+                                                            # {"fromcurrent": True}
                                                             ]),
                     dict(label="❚❚", method="animate",
                          args=[[None], {"frame": {"duration": duration, "redraw": True},
