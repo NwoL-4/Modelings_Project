@@ -47,6 +47,8 @@ css = """
     }
 """
 
+images = os.path.join(os.getcwd(), 'images')
+
 
 class Nbody(QWidget):
     def __init__(self):
@@ -430,7 +432,7 @@ class Nbody(QWidget):
         fig.layout.sliders = sliders
         fig.frames = frames
 
-        plot_html = os.path.join(os.getcwd(), 'plot_nBody.html')
+        plot_html = os.path.join(images, 'plot_nBody.html')
         fig.write_html(plot_html)
 
         self.webview.setUrl(QUrl.fromLocalFile(plot_html))
@@ -483,7 +485,6 @@ class HeatEq(QWidget):
         self.view_layout.addRow(self.progress_bar)
 
         self.webview = QWebEngineView(self)
-        self.webview.setUrl('plot_n_body.html')
         self.webview.setFixedHeight(int(self.window_height // 1.7))
         self.view_layout.addWidget(self.webview)
 
@@ -860,7 +861,7 @@ class HeatEq(QWidget):
         fig.layout.sliders = sliders
         fig.frames = frames
 
-        plot_html = os.path.join(os.getcwd(), 'plot_heatEq.html')
+        plot_html = os.path.join(images, 'plot_heatEq.html')
         fig.write_html(plot_html)
 
         self.webview.setUrl(QUrl.fromLocalFile(plot_html))
