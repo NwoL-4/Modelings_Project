@@ -2,6 +2,7 @@ from typing import Callable
 
 import numpy as np
 from PySide6.QtCore import *
+from PySide6.QtGui import QColor
 from numba import njit, prange
 from scipy import constants as const
 
@@ -22,6 +23,11 @@ class PandasModel(QAbstractTableModel):
             if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
                 value = self._data.iloc[index.row(), index.column()]
                 return str(value)
+            if role == Qt.ItemDataRole.BackgroundRole:
+                if index.column() == 1:
+                    color = self._data.iloc[index.row(), index.column()]
+                    return QColor(color)
+        return None
 
     def setData(self, index, value, role):
         if role == Qt.ItemDataRole.EditRole:
