@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="7d7a8b9e-9e0d-483d-9f50-6d98974f9bc4" name="Changes" comment="Добавил папку images с графиками для выводами">
+      <change afterPath="$PROJECT_DIR$/.idea/Modelings_Project.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/constants/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/constants/physics_constants.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/constants/ui_constants.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/abstract_classes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/physics_model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/plotly.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/file_operations.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/js_helpers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/math_helpers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/plot_generators.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/qt_helpers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_n_body.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data_n_body.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/N_body.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/error_handler.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/heat_equation.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/_utils.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;NwoL-4&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/NwoL-4/Modelings_Project.git&quot;,
+    &quot;accountId&quot;: &quot;b5d099f6-4d07-4592-b2d3-9e9a58aeda5f&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2rlgJqzXe3LDolIHyTqsbBgkwVU" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.gui.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.new_models.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/NwoL/PycharmProjects/Modelings_Project&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  }
+}</component>
+  <component name="RunManager" selected="Python.main (1)">
+    <configuration name="core" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Modelings_Project" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/utils" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="C:\Users\NwoL\PycharmProjects\Modelings_Project\utils\core.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="gui" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Modelings_Project" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/gui.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Modelings_Project" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Modelings_Project" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main (1)" />
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.core" />
+        <item itemvalue="Python.gui" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-14705d77f0bb-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.25659.43" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7d7a8b9e-9e0d-483d-9f50-6d98974f9bc4" name="Changes" comment="" />
+      <created>1737139007028</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1737139007028</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Initial commit!">
+      <option name="closed" value="true" />
+      <created>1737235330721</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1737235330721</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Добавил в utils.py метод РК-4">
+      <option name="closed" value="true" />
+      <created>1737235398583</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1737235398583</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Добавил модель N тел">
+      <option name="closed" value="true" />
+      <created>1737235432725</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1737235432725</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Обновил строки импрота">
+      <option name="closed" value="true" />
+      <created>1737235496548</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1737235496548</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Обновил название функций">
+      <option name="closed" value="true" />
+      <created>1737238376203</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1737238376203</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Добавил кнопку запуска">
+      <option name="closed" value="true" />
+      <created>1737238387906</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1737238387906</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Создал модель heat eq для streamlit">
+      <option name="closed" value="true" />
+      <created>1737966875446</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1737966875446</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Добавил запуск heat eq">
+      <option name="closed" value="true" />
+      <created>1737966898983</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1737966898983</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Обновил N_body.py">
+      <option name="closed" value="true" />
+      <created>1737966930313</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1737966930313</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Добавил метод Эйлера для решения heat eq">
+      <option name="closed" value="true" />
+      <created>1737966953886</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1737966953886</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Создал приложение на Qt для моделей">
+      <option name="closed" value="true" />
+      <created>1737966990531</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1737966990531</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Переписал модель N тел на Qt&#10;И создал классы для других моделей (пока в разработке)">
+      <option name="closed" value="true" />
+      <created>1737967058217</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1737967058217</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Создал утилиты для Qt приложения">
+      <option name="closed" value="true" />
+      <created>1737967082724</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1737967082724</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Пример параметров запуска для модели N тел">
+      <option name="closed" value="true" />
+      <created>1737967149549</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1737967149549</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Добавил воспроизведение в 60 fps">
+      <option name="closed" value="true" />
+      <created>1737971210836</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1737971210836</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Устранил ошибку с воспроизведением в 60 fps">
+      <option name="closed" value="true" />
+      <created>1737971741264</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1737971741264</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Добавил css и модель теплового уравнения">
+      <option name="closed" value="true" />
+      <created>1738181568401</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1738181568401</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Добавил цвет в Таблицу для модели N тел">
+      <option name="closed" value="true" />
+      <created>1738181616091</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1738181616091</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Добавил папку images с графиками для выводами">
+      <option name="closed" value="true" />
+      <created>1738181995241</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1738181995241</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Initial commit!" />
+    <MESSAGE value="Добавил в utils.py метод РК-4" />
+    <MESSAGE value="Добавил модель N тел" />
+    <MESSAGE value="Обновил строки импрота" />
+    <MESSAGE value="Обновил название функций" />
+    <MESSAGE value="Добавил кнопку запуска" />
+    <MESSAGE value="Создал модель heat eq для streamlit" />
+    <MESSAGE value="Добавил запуск heat eq" />
+    <MESSAGE value="Обновил N_body.py" />
+    <MESSAGE value="Добавил метод Эйлера для решения heat eq" />
+    <MESSAGE value="Создал приложение на Qt для моделей" />
+    <MESSAGE value="Переписал модель N тел на Qt&#10;И создал классы для других моделей (пока в разработке)" />
+    <MESSAGE value="Создал утилиты для Qt приложения" />
+    <MESSAGE value="Пример параметров запуска для модели N тел" />
+    <MESSAGE value="Добавил воспроизведение в 60 fps" />
+    <MESSAGE value="Устранил ошибку с воспроизведением в 60 fps" />
+    <MESSAGE value="Добавил css и модель теплового уравнения" />
+    <MESSAGE value="Добавил цвет в Таблицу для модели N тел" />
+    <MESSAGE value="Добавил папку images с графиками для выводами" />
+    <option name="LAST_COMMIT_MESSAGE" value="Добавил папку images с графиками для выводами" />
+  </component>
+</project>
