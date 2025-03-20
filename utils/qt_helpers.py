@@ -2,7 +2,7 @@ import pandas as pd
 
 from constants import ui_constants
 
-css = f"""
+MAIN_STYLE = f"""
     QWidget {{
         font-family: {ui_constants.MAIN_FONT};
         font-size: {ui_constants.FONT_SIZE}pt;
@@ -31,6 +31,11 @@ css = f"""
     QPushButton:hover {{
         color: {ui_constants.HOVER_COLOR};
     }}
+    
+    QPushButton:pressed {{
+        color: {ui_constants.HOVER_COLOR};
+        background-color: {ui_constants.HOVER_COLOR};
+    }}
 
     QTextEdit {{
         border: {ui_constants.EDGE_WIDTH_BORDER}px solid {ui_constants.COLOR_BORDER};
@@ -57,17 +62,59 @@ css = f"""
     }}
     
     QTableView {{
-        border: 1px solid #c0c0c0;
-        gridline-color: #e0e0e0;
+        border: 0px solid #c0c0c0;
+        gridline-color: {ui_constants.TEXT_COLOR};
     }}
     QHeaderView::section {{
-        padding: 4px 8px;
-        background: #f8f8f8;
-        border: none;
+        padding: 4px;
+        background-color: {ui_constants.BACKGROUND_COLOR};
+        border: 1px solid {ui_constants.COLOR_BORDER};
     }}
     QTableView::item {{
         padding: 2px 6px;
     }}
+"""
+
+LOGGER_STYLE = f"""
+QTextEdit {{
+    background-color: {ui_constants.BACKGROUND_TEXT_EDIT_COLOR};
+    color: {ui_constants.TEXT_COLOR};
+    border: none;
+    }}
+QScrollBar:vertical {{
+    border: none;
+    background: {ui_constants.BACKGROUND_COLOR};
+    width: 10px;
+    margin: 0px;
+}}
+QScrollBar::handle:vertical {{
+    background: {ui_constants.BACKGROUND_COLOR};
+    min-height: 20px;
+    border-radius: 5px;
+}}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
+    height: 0px;
+}}
+"""
+
+
+FORM_STYLE = f"""
+QFrame {{
+    background-color: {ui_constants.BACKGROUND_COLOR};
+    border: 1px solid {ui_constants.BACKGROUND_TEXT_EDIT_COLOR};
+    border-radius: 5px;
+}}
+"""
+
+EXPAND_BUTTON_STYLE = f"""
+QPushButton {{
+    background-color: transparent;
+    border: none;
+    border-radius: {ui_constants.BORDER_RADIUS}px;
+}}
+QPushButton:hover {{
+    background-color: {ui_constants.HOVER_COLOR};
+}}
 """
 
 
