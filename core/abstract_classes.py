@@ -1,66 +1,175 @@
+import os.path
+import sys
 from datetime import datetime
 
-from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QUrl, QSize, Qt, QAbstractTableModel, QModelIndex
-from PySide6.QtGui import QColor
+from PySide6.QtCore import QUrl, QSize, Qt, QAbstractTableModel, QModelIndex, QTimer
+from PySide6.QtGui import QColor, QTextCursor, QIcon, QFont
 from PySide6.QtWebChannel import QWebChannel
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QVBoxLayout, QWidget, QTextEdit, QScrollArea, QLabel, QHBoxLayout, QPushButton, \
-    QFormLayout, QSizePolicy, QTableView, QComboBox
+    QFormLayout, QSizePolicy, QTableView, QFrame, QHeaderView
 
+import constants.ui_constants as ui_constants
 import utils.file_operations
 import utils.file_operations as file_operations
 import utils.js_helpers as js_helpers
 import utils.qt_helpers as qt_helpers
 
 
+class LogLevel:
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    DEBUG = "DEBUG"
+    SUCCESS = "SUCCESS"
+    DELETE = "DELETE"
 
 
-class Logger(QWidget):
+class ExpandableLogger(QWidget):
+    """Расширяемый логгер с возможностью развертывания вверх"""
+
+    def __init__(self, parent=None, min_height=100, max_height=400):
+        super().__init__(parent)
+        self.min_height = min_height
+        self.max_height = max_height
+        self.is_expanded = False
+
+        self._setup_ui()
+        self._setup_animations()
+        self._connect_signals()
+
+        # self.expand_button.click()
+
+    def _setup_ui(self):
+        """Инициализация UI компонентов"""
+        self.main_layout = QVBoxLayout(self)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setSpacing(0)
+
+        # Создаем основной фрейм
+        self.frame = QFrame()
+        self.frame.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Raised)
+        self.frame.setStyleSheet(qt_helpers.FORM_STYLE)
+
+        # Layout для фрейма
+        self.frame_layout = QVBoxLayout(self.frame)
+        self.frame_layout.setContentsMargins(5, 5, 5, 5)
+
+        # Кнопка развертывания
+        self.expand_button = QPushButton()
+        self.expand_button.setFixedSize(24, 24)
+        self.expand_button.setStyleSheet(qt_helpers.EXPAND_BUTTON_STYLE)
+        self._update_button_icon()
+
+        # Область логов с прокруткой
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setFrameShape(QFrame.Shape.NoFrame)
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+        # Текстовое поле для логов
+        self.log_text = QTextEdit()
+        self.log_text.setReadOnly(True)
+        self.log_text.setFont(QFont(ui_constants.MAIN_FONT, ui_constants.FONT_SIZE))
+        self.log_text.setStyleSheet(qt_helpers.LOGGER_STYLE)
+
+        # Добавляем виджеты в layout
+        self.scroll_area.setWidget(self.log_text)
+        self.frame_layout.addWidget(self.expand_button, 0, Qt.AlignmentFlag.AlignRight)
+        self.frame_layout.addWidget(self.scroll_area)
+        self.main_layout.addWidget(self.frame)
+
+        # Устанавливаем минимальный размер
+        self.setMinimumHeight(self.min_height)
+        self.setMaximumHeight(self.min_height)
+
+    def _setup_animations(self):
+        """Настройка анимации разворачивания"""
+        self.animation_timer = QTimer()
+        self.animation_timer.setInterval(10)  # 10ms для плавности
+        self.animation_step = 5  # Шаг изменения высоты
+        self.current_height = self.min_height
+
+    def _connect_signals(self):
+        """Подключение сигналов"""
+        self.expand_button.clicked.connect(self.toggle_expansion)
+        self.animation_timer.timeout.connect(self._animate_expansion)
+
+    def _update_button_icon(self):
+        """Обновление иконки кнопки развертывания"""
+        icon_path = f"../icons/chevron_down.png" if self.is_expanded else "../icons/chevron_up.png"
+        self.expand_button.setIcon(QIcon(icon_path))
+
+    def _animate_expansion(self):
+        """Анимация разворачивания/сворачивания"""
+        target_height = self.max_height if self.is_expanded else self.min_height
+
+        if self.is_expanded:
+            self.current_height = min(self.current_height + self.animation_step, target_height)
+        else:
+            self.current_height = max(self.current_height - self.animation_step, target_height)
+
+        self.setMaximumHeight(self.current_height)
+
+        if self.current_height == target_height:
+            self.animation_timer.stop()
+
+    def toggle_expansion(self):
+        """Переключение состояния развертывания"""
+        self.is_expanded = not self.is_expanded
+        self._update_button_icon()
+        self.animation_timer.start()
+
+    def log(self, message: str, level: str = "INFO"):
+        """Добавление сообщения в лог"""
+        timestamp = datetime.now().strftime("%H:%M:%S:%f")[:-3]
+        formatted_message = f"[{timestamp}] [{level}] {message}"
+
+        # Добавляем сообщение и прокручиваем вниз
+        self.log_text.append(formatted_message)
+        cursor = self.log_text.textCursor()
+        cursor.movePosition(QTextCursor.MoveOperation.End)
+        self.log_text.setTextCursor(cursor)
+
+    def clear_log(self):
+        """Очистка лога"""
+        self.log_text.clear()
+
+    @staticmethod
+    def _get_level_style(level: str) -> str:
+        """Возвращает стиль для различных уровней логов"""
+        styles = {
+            LogLevel.INFO: "color: #ffffff;",
+            LogLevel.WARNING: "color: #ffd700;",
+            LogLevel.ERROR: "color: #ff4444;",
+            LogLevel.DEBUG: "color: #888888;"
+        }
+        return styles.get(level, styles[LogLevel.INFO])
+
+    def export_logs(self):
+        """Экспорт логов в файл"""
+        try:
+            timestamp = datetime.now().strftime("%d:%m:%Y")
+
+            path = os.path.join(sys.argv[0], 'logs')
+            with open(os.path.join(path, f"{timestamp}_log.txt"), 'w', encoding='utf-8') as f:
+                f.write(self.log_text.toPlainText())
+            self.log("Logs exported successfully", LogLevel.INFO)
+        except Exception as e:
+            self.log(f"Failed to export logs: {str(e)}", LogLevel.ERROR)
+
+
+class ExpandingFormLayout(QFormLayout):
     def __init__(self):
         super().__init__()
 
-        self.logger = QComboBox()
-        self.logger.setMinimumHeight(30)
-
-        logger_layout = QVBoxLayout(self)
-
-        logger_layout.addWidget(self.logger)
-
-    def add_log(self, text):
-        timer = datetime.now().strftime("%H:%M:%S.%f")[:-3]
-        self.logger.addItem(f'[{timer}]---{text}')
+    def addFullWidthWidget(self, widget):
+        """Добавляет виджет на всю ширину формы"""
+        widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.addRow(widget)
 
 
-class ExpandableLog(QWidget):
-    def __init__(self):
-        super().__init__()
-        self._collapsed_height = 100
-        self._expanded_height = 100
-
-        self.layout = QVBoxLayout(self)
-        self.log_area = QTextEdit()
-        # self.log_area.setEnabled(False)
-
-        self.scroll = QScrollArea()
-        self.scroll.setWidget(self.log_area)
-        self.scroll.setWidgetResizable(True)
-        self.scroll.setFixedHeight(100)
-
-        self.animation = QPropertyAnimation(self.log_area, b"maximumHeight")
-        self.animation.setDuration(300)
-        self.animation.setEasingCurve(QEasingCurve.Type.OutQuad)
-
-        self.layout.addWidget(self.scroll)
-
-        self.log_area.setMaximumHeight(self._collapsed_height)
-
-    def add_log(self, message):
-        timestamp = datetime.now().strftime("%H:%M:%S.%f")
-        full_message = f"[{timestamp}] {message}"
-        self.log_area.append(full_message)
-
-
-class webViewWrapper(QWidget):
+class WebViewWrapper(QWidget):
     def __init__(self, path_to_html):
         super().__init__()
 
@@ -149,6 +258,13 @@ class SmartTableView(QWidget):
         super().__init__()
 
         table = TableView()
+        table.setMinimumHeight(150)
+        table.horizontalHeader().setStretchLastSection(True)
+        table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.ResizeToContents
+        )
+        table.setSizePolicy(QSizePolicy.Policy.Expanding,
+                            QSizePolicy.Policy.Expanding)
 
         self.model = model
 
@@ -156,11 +272,10 @@ class SmartTableView(QWidget):
 
         table_layout = QVBoxLayout(self)
         table_layout.setContentsMargins(0, 0, 0, 0)
-        table_layout.addWidget(table)
 
         self.setSizePolicy(
             QSizePolicy.Policy.Expanding,
-            QSizePolicy.Policy.Expanding
+            QSizePolicy.Policy.Fixed
         )
 
         header = table.horizontalHeader()
@@ -188,7 +303,7 @@ class MainWidget(QWidget):
         self.setWindowTitle(name)
         self.setGeometry(150, 150, 1200, 800)
         self.setMinimumSize(QSize(1200, 800))
-        self.setStyleSheet(qt_helpers.css)
+        self.setStyleSheet(qt_helpers.MAIN_STYLE)
 
         self.temppath = utils.file_operations.create_file(self.__class__.__name__)
 
@@ -205,7 +320,7 @@ class MainWidget(QWidget):
         # Элементы main_layout
         inputs_container = QWidget()
         inputs_layout = QVBoxLayout(inputs_container)
-        self.webEngine = webViewWrapper(path_to_html=self.temppath[1])
+        self.webEngine = WebViewWrapper(path_to_html=self.temppath[1])
 
         scroll_area = QScrollArea()
 
@@ -222,14 +337,14 @@ class MainWidget(QWidget):
         self.runner = QPushButton('Запуск модели')
         self.runner.clicked.connect(self.run_model)
 
-        self.logger = Logger()
+        self.logger = ExpandableLogger(min_height=100, max_height=200)
 
         bottom_layout.addWidget(self.runner, alignment=Qt.AlignmentFlag.AlignHCenter)
         bottom_layout.addWidget(self.logger)
 
         # Костыль на scroll_area
         widget = QWidget()
-        self.inputs_widgets = QFormLayout()
+        self.inputs_widgets = ExpandingFormLayout()
         self.inputs_widgets.setRowWrapPolicy(QFormLayout.RowWrapPolicy.DontWrapRows)
         self.inputs_widgets.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         self.inputs_widgets.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.FieldsStayAtSizeHint)
@@ -273,8 +388,10 @@ class MainWidget(QWidget):
 
         self.inputs_widgets.addRow(label, widget)
 
+
     def closeEvent(self, event):
         file_operations.remove_dir(path=self.temppath[0])
+        self.logger.export_logs()
 
     def run_model(self):
         pass
