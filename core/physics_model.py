@@ -1,5 +1,5 @@
 import numpy as np
-from PySide6.QtWidgets import QLabel, QSpinBox, QLineEdit
+from PySide6.QtWidgets import QLabel, QSpinBox, QLineEdit, QSizePolicy
 
 import core.abstract_classes as abstract_classes
 from utils import math_helpers, qt_helpers, methods, solvers
@@ -33,6 +33,7 @@ class NBody(abstract_classes.MainWidget):
 
         _data = math_helpers.create_dataframe_Nbody(self.num_body_input.value(), self.colors_body)
         self.tableNbody = abstract_classes.SmartTableView(abstract_classes.SmartPandasModel(_data))
+        self.tableNbody.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         self.num_body_input.valueChanged.connect(self.changed_model)
 
