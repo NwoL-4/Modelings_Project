@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
 )
 
 from core import physics_model as models
+from core import abstract_classes as abstract_classes
 
 
 class MainWindow(QWidget):
@@ -15,6 +16,7 @@ class MainWindow(QWidget):
         self.setGeometry(150, 150, 400, 300)
 
         self.dict_models = {
+            'Тест': abstract_classes.MainWidget,
             'N тел': models.NBody,
             # 'Тепловое уравнение': HeatEq,
             # 'Колебания маятника': OscillPend
