@@ -10,22 +10,22 @@ MAIN_STYLE = f"""
         color: {ui_constants.TEXT_COLOR};  /* Цвет текста */
     }}
     QSpinBox {{
-        height: {ui_constants.HEIGHT_SPINBOX}px;
+        height: {ui_constants.SPINBOX_HEIGHT}px;
         border-radius: {ui_constants.BORDER_RADIUS}px;
         background-color: {ui_constants.BACKGROUND_COLOR};  /* Фон редактируемых полей */
-        border: {ui_constants.EDGE_WIDTH_BORDER} solid {ui_constants.COLOR_BORDER};  /* Окантовка полей */
+        border: {ui_constants.BORDER_WIDTH_EDGE} solid {ui_constants.BORDER_COLOR};  /* Окантовка полей */
     }}
     QLineEdit {{
-        height: {ui_constants.HEIGHT_LINEEDIT}px;
+        height: {ui_constants.LINEEDIT_HEIGHT}px;
         border-radius: {ui_constants.BORDER_RADIUS}px;
         background-color: {ui_constants.BACKGROUND_COLOR};  /* Фон редактируемых полей */
-        border: {ui_constants.EDGE_WIDTH_BORDER} solid {ui_constants.COLOR_BORDER};  /* Окантовка полей */
+        border: {ui_constants.BORDER_WIDTH_EDGE} solid {ui_constants.BORDER_COLOR};  /* Окантовка полей */
     }}
     QPushButton {{
-        height: {ui_constants.HEIGHT_PUSHBUTTON}px;
+        height: {ui_constants.PUSHBUTTON_HEIGHT}px;
         border-radius: {ui_constants.BORDER_RADIUS}px;
         background-color: {ui_constants.BACKGROUND_COLOR};  /* Фон кнопок */
-        border: {ui_constants.EDGE_WIDTH_BORDER} solid {ui_constants.COLOR_BORDER};  /* Окантовка кнопок */
+        border: {ui_constants.BORDER_WIDTH_EDGE} solid {ui_constants.BORDER_COLOR};  /* Окантовка кнопок */
         padding: {ui_constants.PADDING}px;
     }}
     QPushButton:hover {{
@@ -38,7 +38,7 @@ MAIN_STYLE = f"""
     }}
 
     QTextEdit {{
-        border: {ui_constants.EDGE_WIDTH_BORDER}px solid {ui_constants.COLOR_BORDER};
+        border: {ui_constants.BORDER_WIDTH_EDGE}px solid {ui_constants.BORDER_COLOR};
         border-radius: {ui_constants.BORDER_RADIUS}px;
         background: rgba(255, 255, 255, 0.9);
         selection-background-color: {ui_constants.HOVER_COLOR};
@@ -53,7 +53,7 @@ MAIN_STYLE = f"""
         min-width: 150px;
         max-width: 200px;
         padding-right: 12px;
-        /* border-right: {ui_constants.EDGE_WIDTH_BORDER} solid {ui_constants.COLOR_BORDER}; */
+        /* border-right: {ui_constants.BORDER_WIDTH_EDGE} solid {ui_constants.BORDER_COLOR}; */
     }}
     
     QFormLayout {{
@@ -68,7 +68,7 @@ MAIN_STYLE = f"""
     QHeaderView::section {{
         padding: 4px;
         background-color: {ui_constants.BACKGROUND_COLOR};
-        border: 1px solid {ui_constants.COLOR_BORDER};
+        border: 1px solid {ui_constants.BORDER_COLOR};
     }}
     QTableView::item {{
         padding: 2px 6px;
@@ -77,7 +77,7 @@ MAIN_STYLE = f"""
 
 LOGGER_STYLE = f"""
 QTextEdit {{
-    background-color: {ui_constants.BACKGROUND_TEXT_EDIT_COLOR};
+    background-color: {ui_constants.LOGGER_BACKGROUND_COLOR};
     color: {ui_constants.TEXT_COLOR};
     border: none;
     }}
@@ -101,7 +101,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
 FORM_STYLE = f"""
 QFrame {{
     background-color: {ui_constants.BACKGROUND_COLOR};
-    border: 1px solid {ui_constants.BACKGROUND_TEXT_EDIT_COLOR};
+    border: 1px solid {ui_constants.LOGGER_BACKGROUND_COLOR};
     border-radius: 5px;
 }}
 """
@@ -118,18 +118,36 @@ QPushButton:hover {{
 """
 
 
+INFOBOX_TEXT_STYLE = f"""
+QLabel {{
+    color: {ui_constants.TEXT_COLOR};
+    font-size: {ui_constants.FONT_SIZE}px;
+    font-family: {ui_constants.MAIN_FONT};
+}}
+"""
+
+INFOBOX_STYLE = f"""
+InfoPopup {{
+    background-color: {ui_constants.LOGGER_BACKGROUND_COLOR};
+    border-radius: {ui_constants.BORDER_RADIUS}px;
+    min-width: {ui_constants.INFOBOX_MIN_WIDTH}px;
+    max-width: {ui_constants.INFOBOX_MAX_WIDTH}px;
+}}
+"""
+
+
 def update_row_count(num_body: int, colors_body: list, model):
     new_row_count = num_body
     current_row_count = model.rowCount()
 
-    new_data = pd.DataFrame(columns=model._data.columns)
+    new_data = pd.DataFrame(columns=model.df.columns)
     for i in range(min(current_row_count, new_row_count)):
-        new_data.loc[i] = model._data.iloc[i]
+        new_data.loc[i] = model.df.iloc[i]
     for i in range(current_row_count, new_row_count):
-        new_data.loc[i] = ['0'] * len(model._data.columns)
+        new_data.loc[i] = ['0'] * len(model.df.columns)
         new_data.loc[i, 'Номер тела'] = i + 1
         new_data.loc[i, 'Цвет тела'] = colors_body[i]
 
-    model._data = new_data
+    model.df = new_data
     model.layoutChanged.emit()
     return model

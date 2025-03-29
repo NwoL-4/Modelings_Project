@@ -1,232 +1,160 @@
 import json
-import time
+import os.path
+from pathlib import Path
 
+import plotly
 from PySide6.QtCore import QObject, Signal, Slot
+
+from constants import ui_constants as ui_constants
+from core import abstract_classes as abstract_classes
 
 
 class PythonJsBridge(QObject):
-    initPlot = Signal(dict)  # Инициализация нового графика
-    updatePlot = Signal(dict)  # Обновление данных
-    logMessage = Signal(dict)  # Новый сигнал для логов
+    """Мост для коммуникации между Python и JavaScript"""
+    initFigJson = Signal(str)
+    pushFrameJson = Signal(str, str)
 
-    def __init__(self):
-        super().__init__()
-        self.current_plots = {}
 
-    @Slot(dict)
-    def handle_js_log(self, log_data):
-        """Обработчик логов из JS"""
-        level = log_data.get('level', 'DEBUG').upper()
-        message = log_data.get('message', '')
-        context = log_data.get('context', {})
+    def __init__(self, logger, parent=None):
+        super().__init__(parent)
+        self._ready = False
+        self.logger = logger
 
-        log_entry = f"[JS {level}] {message}"
-        if context:
-            log_entry += f" | {json.dumps(context)}"
+    @Slot()
+    def bridgeReady(self):
+        """Вызывается когда JS мост готов"""
+        self._ready = True
+        self.logger.log("Мост активирован", abstract_classes.LogLevel.JS)
 
-        print(log_entry)  # Или запись в файл
+    @Slot(str)
+    def logMessage(self, message):
+        self.logger.log(f"{message}", abstract_classes.LogLevel.JS)
 
-    @Slot(str, dict)
-    def create_plot(self, plot_id, config):
-        """Создание/обновление графика"""
-        self.current_plots[plot_id] = config
-        self.initPlot.emit({'id': plot_id, **config})
+    @Slot(bool)
+    def plotInitialized(self, success):
+        """Callback после инициализации графика"""
+        if success:
+            self.logger.log(f"График инициализирован успешно", abstract_classes.LogLevel.JS)
+        else:
+            raise self.logger.log(f'График не был инициализирован', abstract_classes.LogLevel.JS)
 
-    @Slot(str, list)
-    def add_frame(self, plot_id, traces):
-        """Добавление кадра данных"""
-        self.updatePlot.emit({
-            'id': plot_id,
-            'traces': traces,
-            'timestamp': time.time()
-        })
+    def init_plot(self, fig, webview):
+        """
+        Инициализация графика из plotly.Figure
 
+        Args:
+            fig (plotly.graph_objects.Figure): объект графика
+            webview (): объект webviewwrapper
+        """
+
+        fig_json = json.dumps({
+            'data': fig.data,
+            'layout': fig.layout
+        }, cls=plotly.utils.PlotlyJSONEncoder)
+        # webview.page().runJavaScript(f"initializePlot('{fig_json}')")
+        self.initFigJson.emit(fig_json)
+
+    def add_frame(self, frame, slider, webview):
+        """
+        Добавление фрейма
+
+        Args:
+            frame (plotly.graph_objects.Frame): объект фрейма
+            slider (list)
+            webview (): объект webviewwrapper
+        """
+
+        frame_json = json.dumps(frame, cls=plotly.utils.PlotlyJSONEncoder)
+        slider_json = json.dumps(slider, cls=plotly.utils.PlotlyJSONEncoder)
+        # webview.page().runJavaScript(f"addFrame('{frame_json}', '{slider_json}')")
+        self.pushFrameJson.emit(frame_json, slider_json)
 
 def generate_html_code():
-    return """
+    main_path = os.path.join(Path(os.path.abspath(__file__)).parent.parent)
+
+    return f"""
 <!DOCTYPE html>
 <html>
 <head>
-<script src="qrc:///qtwebchannel/qwebchannel.js"></script>
-<script src="../src/plotly.min.js"></script>
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <script src="{main_path}/src/plotly-3.0.1.min.js"></script>
+    <style>
+        #graph {{
+            width: 100%;
+            height: 100vh;
+        }}
+    </style>
 </head>
 <body>
-    <div id="plotContainer" style="width:100%;height:100%"></div>
+    <div id="graph"></div>
 
     <script>
-        class JsLogger {
-            constructor() {
-                this.levels = ['DEBUG', 'INFO', 'WARN', 'ERROR']
-                this.history = []
-            }
+        // Глобальное состояние
+        window.plotState = {{
+            figure: null,
+            bridge: null,
+            frames: [],
+        }};
         
-            log(level, message, context = {}) {
-                const entry = {
-                    timestamp: new Date().toISOString(),
-                    level: level.toUpperCase(),
-                    message,
-                    context
-                }
-                
-                this.history.push(entry)
-                window.pyBridge.logMessage(entry)
-                
-                // Сохранение оригинального console.log
-                const original = console[level] || console.log
-                original.apply(console, [`[${level}]`, message, context])
-            }
-        
-            setupGlobalHandlers() {
-                // Перехват ошибок
-                window.onerror = (msg, url, line, col, error) => {
-                    this.log('error', msg, {
-                        url, line, col,
-                        stack: error?.stack
-                    })
-                }
-        
-                // Перехват console
-                this.levels.forEach(level => {
-                    const original = console[level]
-                    console[level] = (...args) => {
-                        this.log(level, args.join(' '))
-                        original.apply(console, args)
-                    }
-                })
-            }
-        }
-        
-        // Интеграция с Plotly
-        function wrapPlotlyCalls() {
-            const originalNewPlot = Plotly.newPlot
-            Plotly.newPlot = function(container, data, layout, config) {
-                try {
-                    logger.log('debug', 'Plotly.newPlot initiated', {
-                        container: container.id,
-                        dataTypes: data.map(d => d.type),
-                        layoutKeys: Object.keys(layout)
-                    })
-                    
-                    return originalNewPlot.apply(this, arguments)
-                        .then(() => {
-                            logger.log('info', 'Plot initialized successfully', {
-                                container: container.id
-                            })
-                        })
-                        .catch(error => {
-                            logger.log('error', 'Plot initialization failed', {
-                                error: error.toString(),
-                                stack: error.stack
-                            })
-                            throw error
-                        })
-                } catch (e) {
-                    logger.log('error', 'Critical error in Plotly.newPlot', {
-                        error: e.toString()
-                    })
-                }
-            }
-        }
+        const config = {{
+            responsive: true,
+            displayModeBar: true,
+            displaylogo: false,
+        }};
 
-        class PlotManager {
-            constructor() {
-                this.logger = new JsLogger()
-                this.logger.setupGlobalHandlers()
-                wrapPlotlyCalls()
-                
-                // Проверка наличия зависимостей
-                this.logger.log('debug', 'Initializing PlotManager', {
-                    dependencies: {
-                        Plotly: typeof Plotly,
-                        QWebChannel: typeof QWebChannel
-                    }
-                })
-            }
+        // Инициализация моста
+        new QWebChannel(qt.webChannelTransport, function(channel) {{
+            window.plotState.bridge = channel.objects.bridge;
+            console.log("Bridge initialized");
             
-            handleInit(msg) {
-                if (!msg.id) {
-                    this.logger.log('error', 'Missing plot ID in init message', {message: msg})
-                    return
-                }
+            // Сообщаем Python, что мост готов
+            if (window.plotState.bridge) {{
+                window.plotState.bridge.initFigJson.connect(initializePlot);
+                window.plotState.bridge.pushFrameJson.connect(addFrame);
+                window.plotState.bridge.bridgeReady();
+            }}
+        }});
 
-            initWebChannel() {
-                new QWebChannel(qt.webChannelTransport, channel => {
-                    window.bridge = channel.objects.bridge;
-                    this.setupSignals();
-                });
-            }
+        window.plotState.bridge.logMessage('Ага');
 
-            setupSignals() {
-                window.bridge.initPlot.connect(msg => this.handleInit(msg));
-                window.bridge.updatePlot.connect(msg => this.handleUpdate(msg));
-            }
+        function initializePlot(plotJSON) {{
+            const figure = JSON.parse(plotJSON);
 
-            handleInit({id, type, layout, traces, config}) {
-                const container = document.createElement('div');
-                container.id = `plot-${id}`;
-                document.body.appendChild(container);
-                
-                this.plots.set(id, {
-                    type: type || 'scatter',
-                    layout: {
-                        ...layout,
-                        autosize: true,
-                        margin: {t: 40, b: 40, l: 60, r: 30}
-                    },
-                    config: {
-                        responsive: true,
-                        ...config
-                    },
-                    data: []
-                });
+            Plotly.react('graph', figure.data, figure.layout, config).then(() => {{
+                window.plotState.figure = figure;
+                window.plotState.figure.layout.sliders = [];
+                window.plotState.figure.layout.sliders.push({{
+                    steps: [],
+                }});
+                window.plotState.figure.frames = [];
+                window.plotState.bridge.plotInitialized(true);
+            }}).catch(error => {{
+                console.error("Plot initialization error:", error);
+                window.plotState.bridge.plotInitialized(false);
+            }});
+        }}
 
-                Plotly.newPlot(container, [], this.plots.get(id).layout, this.plots.get(id).config);
-            }
+        function addFrame(frameJSON, sliderJSON) {{
+            const frame = JSON.parse(frameJSON);
+            const slider = JSON.parse(sliderJSON);
+            
+            window.plotState.figure.frames.push(frame);
+            window.plotState.figure.layout.sliders[0].steps.push(slider);
+            
+            // Добавляем фреймы к текущему графику
+            Plotly.react('graph', window.plotState.figure).then(() => {{
+                window.plotState.bridge.logMessage('Фрейма добавлен успешно')
+            }}).catch(error => {{
+                window.plotState.bridge.logMessage('Фрейм не добавлен')
+            }});
+        }}
 
-            handleUpdate({id, traces}) {
-                if (!this.plots.has(id)) return;
-
-                const plot = this.plots.get(id);
-                const updates = [];
-                
-                traces.forEach((trace, idx) => {
-                    const fullTrace = {
-                        type: plot.type,
-                        mode: 'markers',
-                        ...trace,
-                        xaxis: 'x',
-                        yaxis: 'y',
-                        scene: plot.type.includes('3d') ? 'scene' : null
-                    };
-                    
-                    if (idx < plot.data.length) {
-                        updates.push({...fullTrace, ...{x: [trace.x], y: [trace.y], z: [trace.z]}});
-                    } else {
-                        plot.data.push(fullTrace);
-                        Plotly.addTraces(`plot-${id}`, fullTrace);
-                    }
-                });
-
-                if (updates.length > 0) {
-                    Plotly.restyle(`plot-${id}`, updates);
-                }
-
-                // Автомасштабирование для 3D
-                if (plot.type === 'scatter3d') {
-                    Plotly.relayout(`plot-${id}`, {
-                        scene: {
-                            aspectmode: 'data'
-                        }
-                    });
-                }
-            }
-        }
-
-        // Инициализация после загрузки
-        window.addEventListener('load', () => {
-            window.plotManager = new PlotManager();
-        });
     </script>
 </body>
 </html>
 """
+
+
+js_script = f'''
+const layout = 
+'''

@@ -1,23 +1,25 @@
 import numpy as np
 import pandas as pd
-from numba import njit, prange
-
-import constants.physics_constants as physics_constants
-
 
 def create_dataframe_Nbody(num_body: int, color_body: list):
 
     return pd.DataFrame({
         'Номер тела': np.arange(1, num_body + 1, 1),
         'Цвет тела': color_body[:num_body],
-        'Масса, кг': ['0'] * num_body,
-        'Радиус, м': ['0'] * num_body,
-        'Начальная скорость x, м/c': ['0'] * num_body,
-        'Начальная скорость y, м/c': ['0'] * num_body,
-        'Начальная скорость z, м/c': ['0'] * num_body,
-        'Координата x, м': ['0'] * num_body,
-        'Координата y, м': ['0'] * num_body,
-        'Координата z, м': ['0'] * num_body,
+        'Масса, кг': ['1e13'] * num_body,
+        'Радиус, м': ['1'] * num_body,
+        # 'Начальная скорость x, м/c': ['0'] * num_body,
+        # 'Начальная скорость y, м/c': ['0'] * num_body,
+        # 'Начальная скорость z, м/c': ['0'] * num_body,
+        'Начальная скорость x, м/c': [0, 0, 2],
+        'Начальная скорость y, м/c': [2, 0, 0],
+        'Начальная скорость z, м/c': [0, 2, 0],
+        # 'Координата x, м': ['0'] * num_body,
+        # 'Координата y, м': ['0'] * num_body,
+        # 'Координата z, м': ['0'] * num_body,
+        'Координата x, м': [100, 0, 0],
+        'Координата y, м': [0, 100, 0],
+        'Координата z, м': [0, 0, 100],
     })
 
 

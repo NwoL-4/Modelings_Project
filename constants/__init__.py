@@ -14,14 +14,14 @@ from .ui_constants import (
     BACKGROUND_COLOR,
     TEXT_COLOR,
     BORDER_RADIUS,
-    EDGE_WIDTH_BORDER,
-    COLOR_BORDER,
+    BORDER_WIDTH_EDGE,
+    BORDER_COLOR,
     PADDING,
     HOVER_COLOR,
     DISABLE_COLOR,
-    HEIGHT_SPINBOX,
-    HEIGHT_LINEEDIT,
-    HEIGHT_PUSHBUTTON
+    SPINBOX_HEIGHT,
+    LINEEDIT_HEIGHT,
+    PUSHBUTTON_HEIGHT
 )
 
 class ConstGroup:
@@ -37,14 +37,14 @@ class ConstGroup:
         'text color': TEXT_COLOR,
         'background color': BACKGROUND_COLOR,
         'border radius': BORDER_RADIUS,
-        'border width': EDGE_WIDTH_BORDER,
+        'border width': BORDER_WIDTH_EDGE,
         'padding': PADDING,
-        'border color': COLOR_BORDER,
+        'border color': BORDER_COLOR,
         'hover color': HOVER_COLOR,
         'disable color': DISABLE_COLOR,
-        'spinbox height': HEIGHT_SPINBOX,
-        'lineedit height': HEIGHT_LINEEDIT,
-        'pushbutton height': HEIGHT_PUSHBUTTON
+        'spinbox height': SPINBOX_HEIGHT,
+        'lineedit height': LINEEDIT_HEIGHT,
+        'pushbutton height': PUSHBUTTON_HEIGHT
     }
 
 
