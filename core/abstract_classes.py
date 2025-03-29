@@ -516,7 +516,7 @@ class MainWidget(QWidget):
         self.setMinimumSize(QSize(1200, 800))
         self.setStyleSheet(qt_helpers.MAIN_STYLE)
 
-        self.temppath = utils.file_operations.create_file(self.__class__.__name__)
+        self.temppath = file_operations.create_file(self.__class__.__name__)
 
         # Основной layout
         layout = QVBoxLayout()
