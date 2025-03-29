@@ -13,11 +13,8 @@ from PySide6.QtWidgets import QVBoxLayout, QWidget, QTextEdit, QScrollArea, QLab
     QFormLayout, QSizePolicy, QTableView, QFrame, QHeaderView, QApplication, QLineEdit, QSpinBox, QComboBox, QDialog, \
     QTextBrowser, QDialogButtonBox, QMenuBar, QMenu, QProgressBar
 
-import constants.ui_constants as ui_constants
-import utils.file_operations
-import utils.file_operations as file_operations
-import utils.js_helpers as js_helpers
-import utils.qt_helpers as qt_helpers
+from constants import ui_constants
+from utils import file_operations, js_helpers, qt_helpers
 
 
 class LogLevel:
