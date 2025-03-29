@@ -29,7 +29,7 @@ class NBody(abstract_classes.MainWidget):
                                                                      ' Максимум: 1e7)')
         self.num_iter_input.setRange(10, int(1e7))
         self.num_iter_input.setValue(50)
-        self.num_body_input.valueChanged.connect(self.change_view)
+        self.num_iter_input.valueChanged.connect(self.change_view)
 
         self.num_view_input = abstract_classes.HelpSpinBox(
             help_text=f'Выберите число фреймов для отображения\n'
@@ -37,7 +37,6 @@ class NBody(abstract_classes.MainWidget):
                       f' Минимум:  2)')
         self.num_view_input.setRange(2, 500)
         self.num_view_input.setValue(200)
-        self.change_view()
 
         tableSubheader = QLabel("Параметры тел")
 
