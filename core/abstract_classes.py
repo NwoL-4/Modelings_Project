@@ -120,10 +120,13 @@ class ExpandableLogger(QWidget):
         self._update_button_icon()
         self.animation_timer.start()
 
-    def log(self, message: str, level: str = "INFO"):
+    def log(self, message: str, level: str = LogLevel.INFO):
         """Добавление сообщения в лог"""
         timestamp = datetime.now().strftime("%H:%M:%S:%f")[:-3]
-        formatted_message = f"[{timestamp}] [{level}] {message}"
+        style = self._get_level_style(level)
+        formatted_message = (f"<span style='{ui_constants.TEXT_COLOR};'>[{timestamp}]</span>\t"
+                             f"<span style='{style};'>[{level}]</span>\t"
+                             f"<span style='{style};'>{message}</span>\n")
 
         # Добавляем сообщение и прокручиваем вниз
         self.log_text.append(formatted_message)
@@ -139,10 +142,13 @@ class ExpandableLogger(QWidget):
     def _get_level_style(level: str) -> str:
         """Возвращает стиль для различных уровней логов"""
         styles = {
-            LogLevel.INFO: "color: #ffffff;",
-            LogLevel.WARNING: "color: #ffd700;",
-            LogLevel.ERROR: "color: #ff4444;",
-            LogLevel.DEBUG: "color: #888888;"
+            LogLevel.INFO: "color: #000000",
+            LogLevel.WARNING: "color: #ffa420",
+            LogLevel.ERROR: "color: #dc143c",
+            LogLevel.DEBUG: "color: #db01ff",
+            LogLevel.JS: "color: #1b00ff",
+            LogLevel.SUCCESS: "color: #04ff01",
+            LogLevel.DELETE: "color: #ff0000"
         }
         return styles.get(level, styles[LogLevel.INFO])
 
@@ -215,6 +221,7 @@ class SmartPandasModel(QAbstractTableModel):
                 if isinstance(value, np.float64):
                     if np.isnan(value):
                         return str('-')
+                    return str(value.tolist())
                 return str(value)
             if role == Qt.ItemDataRole.BackgroundRole:
                 if index.column() == 1:
@@ -224,7 +231,7 @@ class SmartPandasModel(QAbstractTableModel):
 
     def setData(self, index, value, role):
         if role == Qt.ItemDataRole.EditRole:
-            if any([symbol in string.ascii_letters for symbol in value]):
+            if any([symbol in string.ascii_letters.replace('e', '') for symbol in value]):
                 float_value = np.nan
             else:
                 float_value = np.float64(value.replace(',', '.'))
