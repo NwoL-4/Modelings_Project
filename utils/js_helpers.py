@@ -5,8 +5,7 @@ from pathlib import Path
 import plotly
 from PySide6.QtCore import QObject, Signal, Slot
 
-from constants import ui_constants as ui_constants
-from core import abstract_classes as abstract_classes
+from core import abstract_classes
 
 
 class PythonJsBridge(QObject):
@@ -51,7 +50,6 @@ class PythonJsBridge(QObject):
             'data': fig.data,
             'layout': fig.layout
         }, cls=plotly.utils.PlotlyJSONEncoder)
-        # webview.page().runJavaScript(f"initializePlot('{fig_json}')")
         self.initFigJson.emit(fig_json)
 
     def add_frame(self, frame, slider, webview):
@@ -66,7 +64,6 @@ class PythonJsBridge(QObject):
 
         frame_json = json.dumps(frame, cls=plotly.utils.PlotlyJSONEncoder)
         slider_json = json.dumps(slider, cls=plotly.utils.PlotlyJSONEncoder)
-        # webview.page().runJavaScript(f"addFrame('{frame_json}', '{slider_json}')")
         self.pushFrameJson.emit(frame_json, slider_json)
 
 def generate_html_code():
@@ -142,19 +139,10 @@ def generate_html_code():
             window.plotState.figure.layout.sliders[0].steps.push(slider);
             
             // Добавляем фреймы к текущему графику
-            Plotly.react('graph', window.plotState.figure).then(() => {{
-                window.plotState.bridge.logMessage('Фрейма добавлен успешно')
-            }}).catch(error => {{
-                window.plotState.bridge.logMessage('Фрейм не добавлен')
-            }});
+            Plotly.react('graph', window.plotState.figure);
         }}
 
     </script>
 </body>
 </html>
 """
-
-
-js_script = f'''
-const layout = 
-'''
