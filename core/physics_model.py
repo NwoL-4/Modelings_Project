@@ -28,7 +28,7 @@ class NBody(abstract_classes.MainWidget):
                                                                      '(Минимум:  10\n'
                                                                      ' Максимум: 1e7)')
         self.num_iter_input.setRange(10, int(1e7))
-        self.num_iter_input.setValue(50)
+        self.num_iter_input.setValue(1000)
         self.num_iter_input.valueChanged.connect(self.change_view)
 
         self.num_view_input = abstract_classes.HelpSpinBox(
@@ -37,6 +37,7 @@ class NBody(abstract_classes.MainWidget):
                       f' Минимум:  2)')
         self.num_view_input.setRange(2, 500)
         self.num_view_input.setValue(200)
+        self.change_view()
 
         tableSubheader = QLabel("Параметры тел")
 
@@ -122,8 +123,6 @@ class NBody(abstract_classes.MainWidget):
             self.progressBar.setFormat(f"Моделирование завершено на: {i/num_iter * 100:.2f}%")
             self.progressBar.setValue(int(i / num_iter * 1000))
 
-        self.logger.log('Success', abstract_classes.LogLevel.SUCCESS)
-
     def init_fig(self, data):
         # Создаем subplot
         fig = make_subplots(
@@ -178,3 +177,20 @@ class NBody(abstract_classes.MainWidget):
         )
 
         self.webEngine.bridge.add_frame(frame, slider, self.webEngine.webView)
+
+
+class HeatEq(abstract_classes.MainWidget):
+    def __init__(self, name):
+        super().__init__(name)
+
+        simSubheader = QLabel("Параметры симуляции")
+        plateSubheader = QLabel("Параметры пластины")
+        boundSubheader = QLabel("Начальные и граничные условия")
+
+        self.num_nodes_input = abstract_classes.HelpSpinBox(help_text="Выберите число узлов сетки\n"
+                                                                      "(Минимум:  2,"
+                                                                      " Максимум: 1000)")
+        self.num_nodes_input.setRange(2, 1000)
+        self.num_nodes_input.setValue(100)
+
+        self.num_iter_input = abstract_classes.HelpSpinBox(help_text="Выберите время моделирования")
