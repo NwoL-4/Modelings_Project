@@ -1,25 +1,22 @@
 import sys
 
+
 from PySide6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QComboBox,
-    QPushButton, QLabel
+    QApplication, QWidget, QVBoxLayout, QComboBox, QPushButton, QLabel, QMainWindow
 )
 
-from core import physics_model as models
-from core import abstract_classes as abstract_classes
+from core import models
+from core.classes import gui
 
 
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Выбор физической модели")
-        self.setGeometry(150, 150, 400, 300)
+        self.setWindowTitle("Physics Model")
+        self.setGeometry(150, 150, 400, 400)
 
         self.dict_models = {
-            'Тест': abstract_classes.MainWidget,
-            'N тел': models.NBody,
-            # 'Тепловое уравнение': HeatEq,
-            # 'Колебания маятника': OscillPend
+            'Тест': gui.BasicGui,
         }
 
         layout = QVBoxLayout()
